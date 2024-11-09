@@ -1,4 +1,5 @@
 import argparse
+from . import data
 
 
 def main():
@@ -7,17 +8,23 @@ def main():
 
 
 def parse_args():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        prog="byog", description="The stupidest content tracker"
+    )
 
-    commands = parser.add_subparsers(dest="command")
+    commands = parser.add_subparsers(title="Command", dest="command")
     commands.required = True
 
-    init_parser = commands.add_parser("init")
-    init_parser.set_defaults(func = init)
+    init_parser = commands.add_parser(
+        "init", description="Initialize a new, empty repository."
+    )
+    init_parser.add_argument(
+        "path", default=".", nargs=1, help="Where to create a repository."
+    )
+    init_parser.set_defaults(func=init)
 
     return parser.parse_args()
 
 
 def init(args):
-    print("Hello World!!")
-
+    data.init(path=args.path[0])
