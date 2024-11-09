@@ -1,4 +1,5 @@
 import argparse
+from os import path
 from . import data
 
 
@@ -23,8 +24,21 @@ def parse_args():
     )
     init_parser.set_defaults(func=init)
 
+    hash_obj_parser = commands.add_parser(
+        "hash-object",
+        description="Hash the give file. And stores in .byog/objects",
+    )
+    hash_obj_parser.add_argument(
+        "path", nargs=1, type=str, help="Path to a file which has to hash."
+    )
+    hash_obj_parser.set_defaults(func=hash_obj)
+
     return parser.parse_args()
 
 
 def init(args):
     data.init(path=args.path[0])
+
+
+def hash_obj(args):
+    data.hash_obj(path=args.path[0])
