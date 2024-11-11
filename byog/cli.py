@@ -1,5 +1,4 @@
 import argparse
-from os import path
 from . import data
 
 
@@ -33,6 +32,17 @@ def parse_args():
     )
     hash_obj_parser.set_defaults(func=hash_obj)
 
+    cat_file_parser = commands.add_parser(
+        "cat-file", description="Outputs the object related ot OID."
+    )
+    cat_file_parser.add_argument(
+        "oid",
+        nargs=1,
+        type=str,
+        help="Object ID which you get when using 'hash-object'.",
+    )
+    cat_file_parser.set_defaults(func=cat_file)
+
     return parser.parse_args()
 
 
@@ -41,4 +51,10 @@ def init(args):
 
 
 def hash_obj(args):
-    data.hash_obj(path=args.path[0])
+    oid = data.hash_obj(path=args.path[0])
+    print(f"The Object ID(OID) is {oid}")
+
+
+def cat_file(args):
+    file_data = data.cat_file(args.oid[0])
+    print(file_data)

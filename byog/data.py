@@ -26,6 +26,8 @@ def init(path: str):
             #  TODO: Create directories and files for .byog
             os.makedirs(os.path.join(path, BYOG_DIR))
             os.makedirs(os.path.join(path, BYOG_DIR, "objects"))
+            realpath = os.path.realpath(os.path.join(path, BYOG_DIR))
+            print(f"Initilized empty byog repository in {realpath}")
         else:
             raise Exception(f'Directory is not empty. ".byog" is already present.')
     else:
@@ -33,8 +35,6 @@ def init(path: str):
 
 
 def hash_obj(path: str):
-    print("Hashing the file")
-
     if os.path.isfile(os.path.realpath(path)):
         with open(path, "rb") as f:
             data = f.read()
@@ -46,3 +46,13 @@ def hash_obj(path: str):
             return obj_id
     else:
         raise Exception(f'Give file path "{path}" is not correct.')
+
+
+def cat_file(oid: str):
+    repo_path = find_repo(".")
+    if os.path.isfile(os.path.join(repo_path, BYOG_DIR, "objects", oid)):
+        path = os.path.join(repo_path, BYOG_DIR, "objects", oid)
+        with open(path, "r") as f:
+            return f.read()
+    else:
+        raise Exception(f'Given Object ID "{oid}" does not exists.')
