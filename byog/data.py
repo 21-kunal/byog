@@ -18,7 +18,7 @@ def find_repo(path: str) -> str:
     return find_repo(parent)
 
 
-def init(path: str):
+def init(path: str) -> None:
     """Initilize a new, empty repository."""
 
     if os.path.isdir(os.path.join(path)):
@@ -34,25 +34,31 @@ def init(path: str):
         raise Exception(f'Given path "{path}" does not exists.')
 
 
-def hash_obj(path: str):
+def hash_obj(path: str, type_: str = "blob") -> str:
     if os.path.isfile(os.path.realpath(path)):
         with open(path, "rb") as f:
-            data = f.read()
-            obj_id = hashlib.sha1(data).hexdigest()
+            obj = type_.encode() + b"\x00" + f.read()
+            obj_id = hashlib.sha1(obj).hexdigest()
             repo_path = find_repo(os.path.realpath(path))
             with open(f"{repo_path}/.byog/objects/{obj_id}", "wb") as ff:
-                ff.write(data)
+                ff.write(obj)
 
             return obj_id
     else:
         raise Exception(f'Give file path "{path}" is not correct.')
 
 
-def cat_file(oid: str):
+def cat_file(oid: str, expected: str = "blob") -> str:
     repo_path = find_repo(".")
     if os.path.isfile(os.path.join(repo_path, BYOG_DIR, "objects", oid)):
         path = os.path.join(repo_path, BYOG_DIR, "objects", oid)
         with open(path, "r") as f:
-            return f.read()
+            obj = f.read()
+            type_, _, data = obj.partition("\x00")
+
+            if type_ != expected:
+                raise Exception(f'Expected "{expected}", but got {type_}')
+
+            return data
     else:
         raise Exception(f'Given Object ID "{oid}" does not exists.')
