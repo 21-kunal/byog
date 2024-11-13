@@ -1,5 +1,5 @@
 import argparse
-from . import data
+import data
 
 
 def main():
