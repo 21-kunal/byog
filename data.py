@@ -34,18 +34,26 @@ def init(path: str) -> None:
         raise Exception(f'Given path "{path}" does not exists.')
 
 
-def hash_obj(path: str, type_: str = "blob") -> str:
-    if os.path.isfile(os.path.realpath(path)):
-        with open(path, "rb") as f:
-            obj = type_.encode() + b"\x00" + f.read()
-            obj_id = hashlib.sha1(obj).hexdigest()
-            repo_path = find_repo(os.path.realpath(path))
-            with open(f"{repo_path}/.byog/objects/{obj_id}", "wb") as ff:
-                ff.write(obj)
+def hash_obj(data: bytes, type_: str = "blob") -> str:
+    obj = type_.encode() + b"\x00" + data
+    obj_id = hashlib.sha1(obj).hexdigest()
+    repo_path = find_repo(os.path.realpath("."))
 
-            return obj_id
-    else:
-        raise Exception(f'Given file path "{path}" is not correct.')
+    with open(f"{repo_path}/.byog/objects/{obj_id}", "wb") as f:
+        f.write(obj)
+
+    return obj_id
+    # if os.path.isfile(os.path.realpath(path)):
+    #     with open(path, "rb") as f:
+    #         obj = type_.encode() + b"\x00" + f.read()
+    #         obj_id = hashlib.sha1(obj).hexdigest()
+    #         repo_path = find_repo(os.path.realpath(path))
+    #         with open(f"{repo_path}/.byog/objects/{obj_id}", "wb") as ff:
+    #             ff.write(obj)
+    #
+    #         return obj_id
+    # else:
+    #     raise Exception(f'Given file path "{path}" is not correct.')
 
 
 def get_object(oid: str, expected: str = "blob") -> str:
