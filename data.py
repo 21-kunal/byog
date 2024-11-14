@@ -45,10 +45,10 @@ def hash_obj(path: str, type_: str = "blob") -> str:
 
             return obj_id
     else:
-        raise Exception(f'Give file path "{path}" is not correct.')
+        raise Exception(f'Given file path "{path}" is not correct.')
 
 
-def cat_file(oid: str, expected: str = "blob") -> str:
+def get_object(oid: str, expected: str = "blob") -> str:
     repo_path = find_repo(".")
     if os.path.isfile(os.path.join(repo_path, BYOG_DIR, "objects", oid)):
         path = os.path.join(repo_path, BYOG_DIR, "objects", oid)

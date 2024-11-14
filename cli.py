@@ -1,5 +1,6 @@
 import argparse
 import data
+import base
 
 
 def main():
@@ -25,7 +26,7 @@ def parse_args():
 
     hash_obj_parser = commands.add_parser(
         "hash-object",
-        description="Hash the give file. And stores in .byog/objects",
+        description="For storing given file in .byog/objects",
     )
     hash_obj_parser.add_argument(
         "path", nargs=1, type=str, help="Path to a file which has to hash."
@@ -43,6 +44,11 @@ def parse_args():
     )
     cat_file_parser.set_defaults(func=cat_file)
 
+    write_tree_parser = commands.add_parser(
+        "write-tree", description="For storing whole directory in .byog/objects"
+    )
+    write_tree_parser.set_defaults(func=write_tree)
+
     return parser.parse_args()
 
 
@@ -56,5 +62,10 @@ def hash_obj(args):
 
 
 def cat_file(args):
-    file_data = data.cat_file(args.oid[0])
+    file_data = data.get_object(args.oid[0])
     print(file_data)
+
+
+def write_tree(args):
+    repo_path = data.find_repo(".")
+    base.write_tree(dir=repo_path)
