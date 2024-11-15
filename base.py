@@ -56,7 +56,26 @@ def get_tree(oid: str, base_path: str = ""):
     return result
 
 
+def _empty_dir():
+    for root, dirnames, filenames in os.walk(data.find_repo("."), topdown=False):
+        for filename in filenames:
+            path = os.path.realpath(f"{root}/{filename}")
+            if is_ignore(path) or not os.path.isfile(path):
+                continue
+            os.remove(path)
+
+        for dirname in dirnames:
+            path = os.path.realpath(f"{root}/{dirname}")
+            if is_ignore(path) or not os.path.isdir(path):
+                continue
+            try:
+                os.rmdir(path)
+            except (FileNotFoundError, OSError):
+                pass
+
+
 def read_tree(tree_oid: str):
+    _empty_dir()
     tree = get_tree(tree_oid, data.find_repo("."))
     for path, oid in tree.items():
         os.makedirs(os.path.dirname(path), exist_ok=True)
