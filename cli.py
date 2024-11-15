@@ -62,7 +62,7 @@ def hash_obj(args):
     if os.path.isfile(os.path.realpath(path)):
         with open(path, "rb") as f:
             oid = data.hash_obj(f.read())
-            return oid
+            print(oid)
     else:
         raise Exception(f'Given file path "{path}" is not correct.')
 
@@ -74,4 +74,5 @@ def cat_file(args):
 
 def write_tree(args):
     repo_path = data.find_repo(".")
-    base.write_tree(dir=repo_path)
+    oid = base.write_tree(dir=repo_path)
+    print(oid)

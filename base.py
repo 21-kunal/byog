@@ -18,6 +18,10 @@ def write_tree(dir: str):
 
             entires.append((file.name, oid, type_))
 
+    tree = "".join(f"{name} {oid} {type_}" for name, oid, type_ in sorted(entires))
+
+    return data.hash_obj(tree.encode(), "tree")
+
 
 def is_ignore(path: str):
     return ".byog" in path.split("/")
