@@ -43,22 +43,23 @@ def parse_args():
     cat_file_parser.set_defaults(func=cat_file)
 
     write_tree_parser = commands.add_parser(
-        "write-tree", description="For storing whole directory in .byog/objects"
+        "write-tree", description="For storing working tree in .byog/objects"
     )
     write_tree_parser.set_defaults(func=write_tree)
 
     read_tree_parser = commands.add_parser(
         "read-tree", description="Read the work tree realted to OID."
     )
-    read_tree_parser.add_argument("tree", type=str, help="")
+    read_tree_parser.add_argument(
+        "tree", type=str, help="Object ID which you get when using write-tree."
+    )
     read_tree_parser.set_defaults(func=read_tree)
 
     return parser.parse_args()
 
 
 def init(args):
-    # data.init(path=args.path)
-    print(args)
+    data.init(path=args.path)
 
 
 def hash_obj(args):
@@ -83,4 +84,4 @@ def write_tree(args):
 
 
 def read_tree(args):
-    pass
+    base.read_tree(args.tree)

@@ -25,3 +25,40 @@ def write_tree(dir: str):
 
 def is_ignore(path: str):
     return ".byog" in path.split("/")
+
+
+def _iter_tree_entries(oid: str):
+    if not oid:
+        return
+
+    tree = data.get_object(oid, "tree")
+
+    for entry in tree.splitlines():
+        name, oid, type_ = entry.split(" ", 2)
+        yield name, oid, type_
+
+
+def get_tree(oid: str, base_path: str = ""):
+    result = {}
+    for name, oid, type_ in _iter_tree_entries(oid):
+        assert "/" not in name
+        assert name not in (".", "..")
+
+        path = base_path + "/" + name
+
+        if type_ == "blob":
+            result[path] = oid
+        elif type_ == "tree":
+            result.update(get_tree(oid, path))
+        else:
+            raise Exception(f"Unknown tree entry of type {type_}")
+
+    return result
+
+
+def read_tree(tree_oid: str):
+    tree = get_tree(tree_oid, data.find_repo("."))
+    for path, oid in tree.items():
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w") as f:
+            f.write(data.get_object(oid))

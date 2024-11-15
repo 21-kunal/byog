@@ -23,7 +23,6 @@ def init(path: str) -> None:
 
     if os.path.isdir(os.path.join(path)):
         if not os.path.isdir(os.path.join(path, BYOG_DIR)):
-            #  TODO: Create directories and files for .byog
             os.makedirs(os.path.join(path, BYOG_DIR))
             os.makedirs(os.path.join(path, BYOG_DIR, "objects"))
             realpath = os.path.realpath(os.path.join(path, BYOG_DIR))
