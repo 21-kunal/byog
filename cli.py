@@ -1,5 +1,6 @@
 import argparse
 import data
+import os
 import base
 
 
@@ -57,8 +58,13 @@ def init(args):
 
 
 def hash_obj(args):
-    oid = data.hash_obj(path=args.path[0])
-    print(f"The Object ID(OID) is {oid}")
+    path = args.path[0]
+    if os.path.isfile(os.path.realpath(path)):
+        with open(path, "rb") as f:
+            oid = data.hash_obj(f.read())
+            return oid
+    else:
+        raise Exception(f'Given file path "{path}" is not correct.')
 
 
 def cat_file(args):

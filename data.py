@@ -43,17 +43,6 @@ def hash_obj(data: bytes, type_: str = "blob") -> str:
         f.write(obj)
 
     return obj_id
-    # if os.path.isfile(os.path.realpath(path)):
-    #     with open(path, "rb") as f:
-    #         obj = type_.encode() + b"\x00" + f.read()
-    #         obj_id = hashlib.sha1(obj).hexdigest()
-    #         repo_path = find_repo(os.path.realpath(path))
-    #         with open(f"{repo_path}/.byog/objects/{obj_id}", "wb") as ff:
-    #             ff.write(obj)
-    #
-    #         return obj_id
-    # else:
-    #     raise Exception(f'Given file path "{path}" is not correct.')
 
 
 def get_object(oid: str, expected: str = "blob") -> str:
