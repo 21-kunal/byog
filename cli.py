@@ -64,6 +64,10 @@ def parse_args():
     commit_parser.set_defaults(func=commit)
 
     log_parser = commands.add_parser("log", description="Logs all the commits.")
+    log_parser.add_argument(
+        "oid", nargs="?", type=str, help="Logs will start from this oid."
+    )
+    log_parser.add_argument("--oneline", action="store_true", help="One line logs.")
     log_parser.set_defaults(func=log)
 
     return parser.parse_args()
@@ -104,13 +108,23 @@ def commit(args: argparse.Namespace):
 
 
 def log(args: argparse.Namespace):
-    oid = data.get_HEAD()
+    oid = args.oid or data.get_HEAD()
 
     while oid:
         commit: base.Commit = base.get_commit(oid)
 
-        print(f"commit {oid}")
-        print(f"  {commit.message}  ")
-        print("")
+        if args.oneline:
+            print(f"\033[33m{oid[:7]}\033[0m  {commit.message}")
+        else:
+            print(f"\033[33mcommit {oid}\033[0m")
+            print(f"  {commit.message}")
+            print("")
+
+        # if args.oneline:
+        #     print(f"{oid[:7]}  {commit.message}")
+        # else:
+        #     print(f"commit {oid}")
+        #     print(f"  {commit.message}  ")
+        #     print("")
 
         oid = commit.parent
