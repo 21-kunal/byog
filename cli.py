@@ -55,14 +55,22 @@ def parse_args():
     )
     read_tree_parser.set_defaults(func=read_tree)
 
+    commit_parser = commands.add_parser(
+        "commit", description="Records the staged changes in the repository."
+    )
+    commit_parser.add_argument(
+        "-m", "--message", type=str, help="Message for the commit.", required=True
+    )
+    commit_parser.set_defaults(func=commit)
+
     return parser.parse_args()
 
 
-def init(args):
+def init(args: argparse.Namespace):
     data.init(path=args.path)
 
 
-def hash_obj(args):
+def hash_obj(args: argparse.Namespace):
     path = args.path
     if os.path.isfile(os.path.realpath(path)):
         with open(path, "rb") as f:
@@ -72,16 +80,21 @@ def hash_obj(args):
         raise Exception(f'Given file path "{path}" is not correct.')
 
 
-def cat_file(args):
+def cat_file(args: argparse.Namespace):
     file_data = data.get_object(args.oid)
     print(file_data)
 
 
-def write_tree(args):
+def write_tree(args: argparse.Namespace):
     repo_path = data.find_repo(".")
     oid = base.write_tree(dir=repo_path)
     print(oid)
 
 
-def read_tree(args):
+def read_tree(args: argparse.Namespace):
     base.read_tree(args.tree)
+
+
+def commit(args: argparse.Namespace):
+    oid = base.commit(args.message)
+    print(oid)

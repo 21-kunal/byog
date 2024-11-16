@@ -81,3 +81,11 @@ def read_tree(tree_oid: str):
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w") as f:
             f.write(data.get_object(oid))
+
+
+def commit(msg: str) -> str:
+    path = data.find_repo(".")
+    oid = write_tree(path)
+    temp = f"tree {oid}\n\n{msg}"
+
+    return data.hash_obj(temp.encode(), type_="commit")
