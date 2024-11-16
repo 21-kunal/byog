@@ -1,5 +1,6 @@
 import os
 import hashlib
+from os.path import isfile
 
 BYOG_DIR = ".byog"
 
@@ -58,3 +59,20 @@ def get_object(oid: str, expected: str = "blob") -> str:
             return data
     else:
         raise Exception(f'Given Object ID "{oid}" does not exists.')
+
+
+def set_HEAD(oid: str) -> None:
+    path = find_repo(".")
+    path = f"{path}/.byog/HEAD"
+
+    with open(path, "w") as f:
+        f.write(oid)
+
+
+def get_HEAD() -> str | None:
+    path = find_repo(".")
+    path = f"{path}/.byog/HEAD"
+
+    if os.path.isfile(path):
+        with open(path) as f:
+            return f.read().strip()

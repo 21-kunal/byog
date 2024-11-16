@@ -63,6 +63,9 @@ def parse_args():
     )
     commit_parser.set_defaults(func=commit)
 
+    log_parser = commands.add_parser("log", description="Logs all the commits.")
+    log_parser.set_defaults(func=log)
+
     return parser.parse_args()
 
 
@@ -98,3 +101,16 @@ def read_tree(args: argparse.Namespace):
 def commit(args: argparse.Namespace):
     oid = base.commit(args.message)
     print(oid)
+
+
+def log(args: argparse.Namespace):
+    oid = data.get_HEAD()
+
+    while oid:
+        commit: base.Commit = base.get_commit(oid)
+
+        print(f"commit {oid}")
+        print(f"  {commit.message}  ")
+        print("")
+
+        oid = commit.parent

@@ -1,5 +1,9 @@
 import os
+from collections import namedtuple
 import data
+
+
+Commit = namedtuple("commit", ["parent", "tree", "message"])
 
 
 def write_tree(dir: str):
@@ -86,6 +90,32 @@ def read_tree(tree_oid: str):
 def commit(msg: str) -> str:
     path = data.find_repo(".")
     oid = write_tree(path)
-    temp = f"tree {oid}\n\n{msg}"
+    temp = f"tree {oid}\n"
+    head = data.get_HEAD()
+    if head:
+        temp = f"{temp}parent {head}\n"
 
-    return data.hash_obj(temp.encode(), type_="commit")
+    temp = f"{temp}\n{msg}"
+    oid = data.hash_obj(temp.encode(), type_="commit")
+    data.set_HEAD(oid)
+    return oid
+
+
+def get_commit(oid: str):
+    parent, tree = None, None
+    commit = data.get_object(oid, "commit")
+
+    lines = commit.splitlines()
+
+    for i in range(len(lines) - 1):
+        if lines[i]:
+            key, value = lines[i].split(" ", 1)
+            if key == "tree":
+                tree = value
+            elif key == "parent":
+                parent = value
+            else:
+                raise Exception(f"Unknown field {key}")
+
+    msg = lines[-1]
+    return Commit(parent=parent, tree=tree, message=msg)
