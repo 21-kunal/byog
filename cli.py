@@ -70,6 +70,11 @@ def parse_args():
     log_parser.add_argument("--oneline", action="store_true", help="One line logs.")
     log_parser.set_defaults(func=log)
 
+    checkout_parser = commands.add_parser("checkout", description="Allows to move to a commit.")
+    checkout_parser.add_argument("oid", type=str, help="Hash of the commit.")
+    checkout_parser.set_defaults(func=checkout)
+
+
     return parser.parse_args()
 
 
@@ -120,11 +125,7 @@ def log(args: argparse.Namespace):
             print(f"  {commit.message}")
             print("")
 
-        # if args.oneline:
-        #     print(f"{oid[:7]}  {commit.message}")
-        # else:
-        #     print(f"commit {oid}")
-        #     print(f"  {commit.message}  ")
-        #     print("")
-
         oid = commit.parent
+
+def checkout(args: argparse.Namespace):
+    base.checkout(args.oid)
