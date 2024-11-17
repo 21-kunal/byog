@@ -91,13 +91,13 @@ def commit(msg: str) -> str:
     path = data.find_repo(".")
     oid = write_tree(path)
     temp = f"tree {oid}\n"
-    head = data.get_HEAD()
+    head = data.get_ref("HEAD")
     if head:
         temp = f"{temp}parent {head}\n"
 
     temp = f"{temp}\n{msg}"
     oid = data.hash_obj(temp.encode(), type_="commit")
-    data.set_HEAD(oid)
+    data.update_ref("HEAD",oid)
     return oid
 
 
@@ -123,4 +123,8 @@ def get_commit(oid: str):
 def checkout(oid: str):
     commit = get_commit(oid)
     read_tree(commit.tree)
-    data.set_HEAD(oid)
+    data.update_ref("HEAD",oid)
+
+def create_tag(name:str, oid:str):
+    #  TODO: Create tags for the oid 
+    pass

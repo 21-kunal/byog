@@ -74,6 +74,10 @@ def parse_args():
     checkout_parser.add_argument("oid", type=str, help="Hash of the commit.")
     checkout_parser.set_defaults(func=checkout)
 
+    tag_parser = commands.add_parser("tag", description="Add tag/names to commit hash.")
+    tag_parser.add_argument("name", type=str, help="Name of the tag")
+    tag_parser.add_argument("oid", type=str, nargs="?", help="Hash of the commit.")
+    tag_parser.set_defaults(func=tag)
 
     return parser.parse_args()
 
@@ -113,7 +117,7 @@ def commit(args: argparse.Namespace):
 
 
 def log(args: argparse.Namespace):
-    oid = args.oid or data.get_HEAD()
+    oid = args.oid or data.get_ref("HEAD")
 
     while oid:
         commit: base.Commit = base.get_commit(oid)
@@ -129,3 +133,9 @@ def log(args: argparse.Namespace):
 
 def checkout(args: argparse.Namespace):
     base.checkout(args.oid)
+
+def tag(args: argparse.Namespace):
+    name = args.name
+    oid = args.oid or data.get_ref("HEAD")
+    if oid:
+        base.create_tag(name, oid)
