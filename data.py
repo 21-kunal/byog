@@ -62,7 +62,7 @@ def get_object(oid: str, expected: str = "blob") -> str:
 
 def update_ref(ref: str, oid: str) -> None:
     path = find_repo(".")
-    path = f"{path}/.byog/{ref}"
+    path = f"{path}/{BYOG_DIR}/{ref}"
 
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
@@ -71,8 +71,20 @@ def update_ref(ref: str, oid: str) -> None:
 
 def get_ref(ref: str) -> str | None:
     path = find_repo(".")
-    path = f"{path}/.byog/{ref}"
+    path = f"{path}/{BYOG_DIR}/{ref}"
 
     if os.path.isfile(path):
         with open(path) as f:
             return f.read().strip()
+
+def iter_refs():
+    refs=["HEAD"]
+    path = find_repo(".")
+    path = f"{path}/{BYOG_DIR}/refs/"
+    for root, _, filenames in os.walk(path):
+        root = os.path.relpath(root, BYOG_DIR)
+        refs.extend(f"{root}/{name}"  for name in filenames)
+
+    for refname in refs:
+        yield refname, get_ref(refname)
+

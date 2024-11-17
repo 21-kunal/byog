@@ -83,6 +83,9 @@ def parse_args():
     tag_parser.add_argument("oid", type=oid, default="@", nargs="?", help="Hash of the commit.")
     tag_parser.set_defaults(func=tag)
 
+    k_parser = commands.add_parser("k", description="visualize all the refs and the commits.")
+    k_parser.set_defaults(func=k)
+
     return parser.parse_args()
 
 
@@ -142,3 +145,18 @@ def checkout(args: argparse.Namespace):
 
 def tag(args: argparse.Namespace):
     base.create_tag(args.name, args.oid)
+
+def k(args: argparse.Namespace):
+    oids = set()
+    for refname, ref in data.iter_refs():
+        print(refname, ref)
+        oids.add(ref)
+
+    for oid in base.iter_commits_and_parents(oids):
+        commit = base.get_commit(oid)
+        print("oid", oid)
+
+        if commit.parent :
+            print("Parent", commit.parent)
+
+    # TODO: Do visualization

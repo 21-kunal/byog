@@ -152,3 +152,18 @@ def get_oid(name: str):
 
     raise Exception(f"Unknown name {name}")
 
+
+def iter_commits_and_parents(oids: set["str"]):
+    visited = set()
+
+    while oids:
+        oid = oids.pop()
+
+        if not oid or oid in visited:
+            continue
+
+        yield oid
+
+        oid = get_commit(oid)
+        oids.add(oid.parent)
+
