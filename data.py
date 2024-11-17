@@ -64,6 +64,7 @@ def update_ref(ref: str, oid: str) -> None:
     path = find_repo(".")
     path = f"{path}/.byog/{ref}"
 
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
         f.write(oid)
 

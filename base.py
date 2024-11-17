@@ -1,6 +1,7 @@
 import os
 from collections import namedtuple
 import data
+import string
 
 
 Commit = namedtuple("commit", ["parent", "tree", "message"])
@@ -97,7 +98,7 @@ def commit(msg: str) -> str:
 
     temp = f"{temp}\n{msg}"
     oid = data.hash_obj(temp.encode(), type_="commit")
-    data.update_ref("HEAD",oid)
+    data.update_ref("HEAD", oid)
     return oid
 
 
@@ -120,11 +121,34 @@ def get_commit(oid: str):
     msg = lines[-1]
     return Commit(parent=parent, tree=tree, message=msg)
 
+
 def checkout(oid: str):
     commit = get_commit(oid)
     read_tree(commit.tree)
-    data.update_ref("HEAD",oid)
+    data.update_ref("HEAD", oid)
 
-def create_tag(name:str, oid:str):
-    #  TODO: Create tags for the oid 
-    pass
+
+def create_tag(name: str, oid: str):
+    data.update_ref(f"/refs/tags/{name}", oid)
+
+
+def get_oid(name: str):
+
+    if name == "@":
+        name = "HEAD"
+
+    refs_to_try = [f"{name}", f"refs/{name}", f"refs/tags/{name}", f"refs/heads/{name}"]
+
+    # Name is ref
+    for ref in refs_to_try:
+        if data.get_ref(ref):
+            return data.get_ref(ref)
+
+    # Name is ref
+    is_hex = all(c in string.hexdigits for c in name)
+
+    if len(name) == 40 and is_hex:
+        return name
+
+    raise Exception(f"Unknown name {name}")
+
