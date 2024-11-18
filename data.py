@@ -62,9 +62,9 @@ def get_object(oid: str, expected: str = "blob") -> str:
         raise Exception(f'Given Object ID "{oid}" does not exists.')
 
 
-def update_ref(ref: str, value: RefValue) -> None:
+def update_ref(ref: str, value: RefValue, deref: bool = True) -> None:
     assert not value.symbolic
-    ref = _get_ref_internal(ref)[0]
+    ref = _get_ref_internal(ref, deref)[0]
     path = find_repo(".")
     path = f"{path}/{BYOG_DIR}/{ref}"
 
@@ -73,10 +73,10 @@ def update_ref(ref: str, value: RefValue) -> None:
         f.write(value.value)
 
 
-def get_ref(ref: str) -> RefValue:
-    return _get_ref_internal(ref)[1]
+def get_ref(ref: str, deref: bool = True) -> RefValue:
+    return _get_ref_internal(ref, deref)[1]
 
-def _get_ref_internal(ref: str) -> tuple[str, RefValue]:
+def _get_ref_internal(ref: str, deref: bool) -> tuple[str, RefValue]:
     path = find_repo(".")
     path = f"{path}/{BYOG_DIR}/{ref}"
     value = None
@@ -85,12 +85,16 @@ def _get_ref_internal(ref: str) -> tuple[str, RefValue]:
         with open(path) as f:
             value = f.read().strip()
 
-        if value and value.startswith("ref:"):
-            return _get_ref_internal(value.split(":",1)[1].strip())
+    symbolic = bool(value) and value.startswith("ref:")
 
-    return ref, RefValue(symbolic=False, value=value)
+    if symbolic:
+        if deref:
+            value = value.split(":",1)[1].strip()
+            return _get_ref_internal(ref=value, deref=True)
 
-def iter_refs():
+    return ref, RefValue(symbolic=symbolic, value=value)
+
+def iter_refs(deref: bool = True):
     refs=["HEAD"]
     path = find_repo(".")
     path = f"{path}/{BYOG_DIR}/refs/"
@@ -99,5 +103,5 @@ def iter_refs():
         refs.extend(f"{root}/{name}"  for name in filenames)
 
     for refname in refs:
-        yield refname, get_ref(refname)
+        yield refname, get_ref(refname, deref)
 
