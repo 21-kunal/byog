@@ -124,9 +124,8 @@ def commit(args: argparse.Namespace):
 
 
 def log(args: argparse.Namespace):
-    oid = args.oid
 
-    while oid:
+    for oid in base.iter_commits_and_parents({args.oid}):
         commit: base.Commit = base.get_commit(oid)
 
         if args.oneline:
@@ -135,8 +134,6 @@ def log(args: argparse.Namespace):
             print(f"\033[33mcommit {oid}\033[0m")
             print(f"  {commit.message}")
             print("")
-
-        oid = commit.parent
 
 
 def checkout(args: argparse.Namespace):

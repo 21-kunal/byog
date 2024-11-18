@@ -1,5 +1,5 @@
 import os
-from collections import namedtuple
+from collections import namedtuple, deque
 import data
 import string
 
@@ -153,11 +153,12 @@ def get_oid(name: str):
     raise Exception(f"Unknown name {name}")
 
 
-def iter_commits_and_parents(oids: set["str"]):
+def iter_commits_and_parents(oids):
     visited = set()
+    oids = deque(oids)
 
     while oids:
-        oid = oids.pop()
+        oid = oids.popleft()
 
         if not oid or oid in visited:
             continue
@@ -165,5 +166,5 @@ def iter_commits_and_parents(oids: set["str"]):
         yield oid
 
         oid = get_commit(oid)
-        oids.add(oid.parent)
+        oids.appendleft(oid.parent)
 
