@@ -1,8 +1,10 @@
 import os
 import hashlib
+from collections import namedtuple
 
 BYOG_DIR = ".byog"
 
+RefValue = namedtuple("RefValue", ["symbolic", "value"])
 
 def find_repo(path: str) -> str:
     path = os.path.realpath(path)
@@ -60,16 +62,16 @@ def get_object(oid: str, expected: str = "blob") -> str:
         raise Exception(f'Given Object ID "{oid}" does not exists.')
 
 
-def update_ref(ref: str, oid: str) -> None:
+def update_ref(ref: str, value: RefValue) -> None:
     path = find_repo(".")
     path = f"{path}/{BYOG_DIR}/{ref}"
 
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
-        f.write(oid)
+        f.write(value.value)
 
 
-def get_ref(ref: str) -> str | None:
+def get_ref(ref: str) -> RefValue:
     path = find_repo(".")
     path = f"{path}/{BYOG_DIR}/{ref}"
     value = None
@@ -81,7 +83,7 @@ def get_ref(ref: str) -> str | None:
         if value and value.startswith("ref:"):
             return get_ref(value.split(":",1)[1].strip())
 
-    return value
+    return RefValue(symbolic=False, value=value)
 
 def iter_refs():
     refs=["HEAD"]
