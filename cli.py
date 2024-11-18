@@ -147,16 +147,20 @@ def tag(args: argparse.Namespace):
     base.create_tag(args.name, args.oid)
 
 def k(args: argparse.Namespace):
+    dot = "digraph commits {\n"
     oids = set()
     for refname, ref in data.iter_refs():
-        print(refname, ref)
+        dot += f'"{refname}" [shape=note]\n'
+        dot += f'"{refname}" -> "{ref}"\n'
         oids.add(ref)
 
     for oid in base.iter_commits_and_parents(oids):
         commit = base.get_commit(oid)
-        print("oid", oid)
+        dot += f'"{oid}" [shape=box style=filled label="{oid[:10]}"]\n'
 
         if commit.parent :
-            print("Parent", commit.parent)
+            dot += f'"{oid}" -> "{commit.parent}"\n'
 
-    # TODO: Do visualization
+    dot += "}"
+    print("\033[33mUse Graphviz (with dot) to visualize the refs and commit graph.\033[0m\n")
+    print(dot)
