@@ -63,6 +63,8 @@ def get_object(oid: str, expected: str = "blob") -> str:
 
 
 def update_ref(ref: str, value: RefValue) -> None:
+    assert not value.symbolic
+    ref = _get_ref_internal(ref)[0]
     path = find_repo(".")
     path = f"{path}/{BYOG_DIR}/{ref}"
 
@@ -72,6 +74,9 @@ def update_ref(ref: str, value: RefValue) -> None:
 
 
 def get_ref(ref: str) -> RefValue:
+    return _get_ref_internal(ref)[1]
+
+def _get_ref_internal(ref: str) -> tuple[str, RefValue]:
     path = find_repo(".")
     path = f"{path}/{BYOG_DIR}/{ref}"
     value = None
@@ -81,9 +86,9 @@ def get_ref(ref: str) -> RefValue:
             value = f.read().strip()
 
         if value and value.startswith("ref:"):
-            return get_ref(value.split(":",1)[1].strip())
+            return _get_ref_internal(value.split(":",1)[1].strip())
 
-    return RefValue(symbolic=False, value=value)
+    return ref, RefValue(symbolic=False, value=value)
 
 def iter_refs():
     refs=["HEAD"]
