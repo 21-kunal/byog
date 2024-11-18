@@ -168,3 +168,6 @@ def iter_commits_and_parents(oids):
         oid = get_commit(oid)
         oids.appendleft(oid.parent)
 
+
+def create_branch(name: str, oid: str):
+    data.update_ref(name, oid)

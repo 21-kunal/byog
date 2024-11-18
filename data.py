@@ -72,10 +72,16 @@ def update_ref(ref: str, oid: str) -> None:
 def get_ref(ref: str) -> str | None:
     path = find_repo(".")
     path = f"{path}/{BYOG_DIR}/{ref}"
+    value = None
 
     if os.path.isfile(path):
         with open(path) as f:
-            return f.read().strip()
+            value = f.read().strip()
+
+        if value and value.startswith("ref:"):
+            return get_ref(value.split(":",1)[1].strip())
+
+    return value
 
 def iter_refs():
     refs=["HEAD"]

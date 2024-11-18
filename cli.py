@@ -86,6 +86,17 @@ def parse_args():
     k_parser = commands.add_parser("k", description="visualize all the refs and the commits.")
     k_parser.set_defaults(func=k)
 
+    branch_parser = commands.add_parser("branch", description="Create branch.")
+    branch_parser.add_argument("name", type=str, help="Name of the branch.")
+    branch_parser.add_argument(
+        "start_point", 
+        default='@', 
+        type=oid, 
+        nargs="?", 
+        help="Ref or hash of a commit."
+    )
+    branch_parser.set_defaults(func=branch)
+ 
     return parser.parse_args()
 
 
@@ -161,3 +172,7 @@ def k(args: argparse.Namespace):
     dot += "}"
     print("\033[33mUse Graphviz (with dot) to visualize the refs and commit graph.\033[0m\n")
     print(dot)
+    
+def branch(args: argparse.Namespace):
+    base.create_branch(args.name, args.start_point)
+    print(f"Branch {args.name} created at {args.start_point[:10]}")
