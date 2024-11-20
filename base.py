@@ -1,3 +1,4 @@
+from argparse import HelpFormatter
 import os
 from collections import namedtuple, deque
 import data
@@ -190,3 +191,13 @@ def iter_commits_and_parents(oids):
 
 def create_branch(name: str, oid: str):
     data.update_ref(f"refs/heads/{name}", data.RefValue(symbolic=False, value=oid))
+
+
+def get_branch_name():
+    HEAD = data.get_ref("HEAD", deref=False)
+    if not HEAD.symbolic:
+        return None
+    path:str = HEAD.value
+    assert path.startswith("refs/heads/")
+    return os.path.relpath(path, "refs/heads")
+

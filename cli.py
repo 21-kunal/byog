@@ -98,6 +98,12 @@ def parse_args():
     )
     branch_parser.set_defaults(func=branch)
  
+    statue_parser = commands.add_parser(
+        "status", 
+        description="Useful information about the working repo."
+    )
+    statue_parser.set_defaults(func=status)
+
     return parser.parse_args()
 
 
@@ -179,3 +185,15 @@ def k(args: argparse.Namespace):
 def branch(args: argparse.Namespace):
     base.create_branch(args.name, args.start_point)
     print(f"Branch {args.name} created at {args.start_point[:10]}")
+
+
+def status(args: argparse.Namespace):
+    HEAD = base.get_oid("@")
+    branch = base.get_branch_name()
+
+    if branch:
+        print(f"\033[33mOn branch {branch}\033[0m\n")
+    else:
+        print(f"HEAD detached at {HEAD[:10]}")
+
+

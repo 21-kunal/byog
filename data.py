@@ -95,8 +95,8 @@ def _get_ref_internal(ref: str, deref: bool) -> tuple[str, RefValue]:
     symbolic = bool(value) and value.startswith("ref:")
 
     if symbolic:
+        value = value.split(":",1)[1].strip()
         if deref:
-            value = value.split(":",1)[1].strip()
             return _get_ref_internal(ref=value, deref=True)
 
     return ref, RefValue(symbolic=symbolic, value=value)
