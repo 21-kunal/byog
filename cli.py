@@ -102,7 +102,7 @@ def parse_args():
 
 
 def init(args: argparse.Namespace):
-    data.init(path=args.path)
+    base.init(path=args.path)
 
 
 def hash_obj(args: argparse.Namespace):

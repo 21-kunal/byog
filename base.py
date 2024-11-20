@@ -6,6 +6,9 @@ import string
 
 Commit = namedtuple("commit", ["parent", "tree", "message"])
 
+def init(path: str):
+    data.init(path)
+    data.update_ref("HEAD", data.RefValue(symbolic=True, value="refs/heads/master"))
 
 def write_tree(dir: str):
     entires = []
