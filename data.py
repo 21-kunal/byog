@@ -63,14 +63,21 @@ def get_object(oid: str, expected: str = "blob") -> str:
 
 
 def update_ref(ref: str, value: RefValue, deref: bool = True) -> None:
-    assert not value.symbolic
     ref = _get_ref_internal(ref, deref)[0]
+
+    assert value.value
+
+    if value.symbolic:
+        temp_value = f"ref: {value.value}"
+    else:
+        temp_value = value.value
+
     path = find_repo(".")
     path = f"{path}/{BYOG_DIR}/{ref}"
 
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
-        f.write(value.value)
+        f.write(temp_value)
 
 
 def get_ref(ref: str, deref: bool = True) -> RefValue:

@@ -75,7 +75,8 @@ def parse_args():
     checkout_parser = commands.add_parser(
         "checkout", description="Allows to move to a commit."
     )
-    checkout_parser.add_argument("oid", type=oid, help="Hash of the commit.")
+    # checkout_parser.add_argument("oid", type=oid, help="Hash of the commit.")
+    checkout_parser.add_argument("commit", help="Hash of the commit.")
     checkout_parser.set_defaults(func=checkout)
 
     tag_parser = commands.add_parser("tag", description="Add tag/names to commit hash.")
@@ -93,7 +94,7 @@ def parse_args():
         default='@', 
         type=oid, 
         nargs="?", 
-        help="Ref or hash of a commit."
+        help="Ref or hash of a commit. By default HEAD."
     )
     branch_parser.set_defaults(func=branch)
  
@@ -148,7 +149,7 @@ def log(args: argparse.Namespace):
 
 
 def checkout(args: argparse.Namespace):
-    base.checkout(args.oid)
+    base.checkout(args.commit)
 
 
 def tag(args: argparse.Namespace):

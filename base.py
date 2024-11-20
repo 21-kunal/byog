@@ -122,10 +122,26 @@ def get_commit(oid: str):
     return Commit(parent=parent, tree=tree, message=msg)
 
 
-def checkout(oid: str):
+def checkout(name: str):
+    oid = get_oid(name)
     commit = get_commit(oid)
     read_tree(commit.tree)
-    data.update_ref("HEAD", data.RefValue(symbolic=False, value=oid))
+
+    if is_branch(name):
+        data.update_ref(
+            "HEAD", 
+            data.RefValue(symbolic=True, value=f"refs/heads/{name}"),
+            deref=False
+        )
+    else:
+        data.update_ref(
+            "HEAD", 
+            data.RefValue(symbolic=False, value=oid),
+            deref=False
+        )
+
+def is_branch(branch:str):
+    return data.get_ref(f"refs/heads/{branch}").value is not None
 
 
 def create_tag(name: str, oid: str):
@@ -170,4 +186,4 @@ def iter_commits_and_parents(oids):
 
 
 def create_branch(name: str, oid: str):
-    data.update_ref(name, data.RefValue(symbolic=False, value=oid))
+    data.update_ref(f"refs/heads/{name}", data.RefValue(symbolic=False, value=oid))
