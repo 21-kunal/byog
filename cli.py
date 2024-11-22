@@ -104,6 +104,12 @@ def parse_args():
     )
     statue_parser.set_defaults(func=status)
 
+
+    reset_parser = commands.add_parser ('reset', description="Help to move to an previous oid.")
+    reset_parser.add_argument ('commit', type=oid, help="Ref or hash of a commit.")
+    reset_parser.set_defaults (func=reset)
+
+
     return parser.parse_args()
 
 
@@ -207,4 +213,5 @@ def status(args: argparse.Namespace):
     else:
         print(f"HEAD detached at {HEAD[:10]}")
 
-
+def reset(args: argparse.Namespace):
+    pass

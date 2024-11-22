@@ -153,6 +153,8 @@ def iter_branch_names():
 def is_branch(branch:str):
     return data.get_ref(f"refs/heads/{branch}").value is not None
 
+def reset(oid: str):
+    data.update_ref("HEAD",data.RefValue(symbolic=False, value=oid))
 
 def create_tag(name: str, oid: str):
     data.update_ref(f"/refs/tags/{name}", data.RefValue(symbolic=False, value=oid))
