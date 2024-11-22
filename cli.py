@@ -142,6 +142,10 @@ def commit(args: argparse.Namespace):
 
 
 def log(args: argparse.Namespace):
+    refs = {}
+
+    for refname, ref in data.iter_refs():
+        refs.setdefault(ref.value, []).append(refname)
 
     for oid in base.iter_commits_and_parents({args.oid}):
         commit: base.Commit = base.get_commit(oid)
@@ -149,7 +153,8 @@ def log(args: argparse.Namespace):
         if args.oneline:
             print(f"\033[33m{oid[:7]}\033[0m  {commit.message}")
         else:
-            print(f"\033[33mcommit {oid}\033[0m")
+            ref_str = f"({', '.join(refs[oid])})" if oid in refs else ""
+            print(f"\033[33mcommit {oid} \033[32m{ref_str}\033[0m")
             print(f"  {commit.message}")
             print("")
 
