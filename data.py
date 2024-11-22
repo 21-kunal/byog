@@ -101,7 +101,7 @@ def _get_ref_internal(ref: str, deref: bool) -> tuple[str, RefValue]:
 
     return ref, RefValue(symbolic=symbolic, value=value)
 
-def iter_refs(deref: bool = True):
+def iter_refs(prefix: str = "", deref: bool = True):
     refs=["HEAD"]
     path = find_repo(".")
     path = f"{path}/{BYOG_DIR}/refs/"
@@ -110,5 +110,7 @@ def iter_refs(deref: bool = True):
         refs.extend(f"{root}/{name}"  for name in filenames)
 
     for refname in refs:
+        if not refname.startswith(prefix):
+            continue
         yield refname, get_ref(refname, deref)
 

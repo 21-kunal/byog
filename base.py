@@ -144,6 +144,12 @@ def checkout(name: str):
             deref=False
         )
 
+
+def iter_branch_names():
+    for refnames, _, in data.iter_refs(prefix="refs/heads"):
+        yield os.path.relpath(refnames, "refs/heads")
+
+
 def is_branch(branch:str):
     return data.get_ref(f"refs/heads/{branch}").value is not None
 

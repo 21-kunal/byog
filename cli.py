@@ -88,7 +88,7 @@ def parse_args():
     k_parser.set_defaults(func=k)
 
     branch_parser = commands.add_parser("branch", description="Create branch.")
-    branch_parser.add_argument("name", type=str, help="Name of the branch.")
+    branch_parser.add_argument("name", nargs="?", type=str, help="Name of the branch.")
     branch_parser.add_argument(
         "start_point", 
         default='@', 
@@ -183,8 +183,14 @@ def k(args: argparse.Namespace):
     print(dot)
     
 def branch(args: argparse.Namespace):
-    base.create_branch(args.name, args.start_point)
-    print(f"Branch {args.name} created at {args.start_point[:10]}")
+    if not args.name:
+        current = base.get_branch_name()
+        for branch in base.iter_branch_names():
+            prefix = "*" if branch == current else " "
+            print(f"\033[32m {prefix}{branch}\033[0m")
+    else:
+        base.create_branch(args.name, args.start_point)
+        print(f"Branch {args.name} created at {args.start_point[:10]}")
 
 
 def status(args: argparse.Namespace):
